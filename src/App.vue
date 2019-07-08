@@ -72,12 +72,12 @@ $bg-color : #faf9f8;
 label{
   font-size: 12px;
 }
-input{
+input, select{
   margin: 6px 0px;
   padding: 6px 8px;
   border: 1px solid #a8a8a8;
 }
-input:focus{
+input:focus,select:focus{
   outline: none;
   border: 1px solid #0078D7;
   background-color: rgba(0, 118, 215, 0.062);
@@ -86,12 +86,13 @@ input:hover{
   border: 1px solid #0078D7;
   transition: 300ms;
 }
+option{
+  padding: 10px;
+}
 //style for form
 .form-row {
   display: -ms-flexbox;
   display: flex;
-  -ms-flex-wrap: wrap;
-  flex-wrap: wrap;
   margin-right: -5px;
   margin-left: -5px;
 }

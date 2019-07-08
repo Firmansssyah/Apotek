@@ -12,28 +12,30 @@
         <div class="col-lg-10">
           <table>
             <thead>
-              <tr style="border-bottom: 3px solid #e4e3e1;">
-                <th style="width: 40px;" scope="col">#</th>
-                <th scope="col">KODE OBAT</th>
-                <th scope="col">NAMA OBAT</th>
-                <th scope="col">STOCK</th>
-                <th scope="col">SUPLAYER</th>
-                <th scope="col">ACTION</th>
+              <tr style="border-bottom: 3px solid #e4e3e1; font-weight:bold;">
+                <td style="width: 40px;" scope="col">
+                  <input type="checkbox">
+                </td>
+                <td scope="col">KODE OBAT</td>
+                <td scope="col">NAMA OBAT</td>
+                <td scope="col" style="text-align:center;">STOCK</td>
+                <td scope="col">SUPLAYER</td>
+                <td scope="col" style="text-align:center;">ACTION</td>
               </tr>
             </thead>
             <tbody>
               <tr v-for="(drug, index) in drugs" :key="drugs.id">
-                <td>{{index+1}}</td>
+                <td><input type="checkbox"></td>
                 <td data-label="KODE OBAT">{{drug.id}}</td>
                 <td data-label="NAMA OBAT">{{drug.drugname}}</td>
-                <td data-label="STOCK">
+                <td data-label="STOCK" style="text-align:center;">
                     {{drug.stock}}
                 </td>
                 <td data-label="SUPLAYER">{{drug.suplayer}}</td>
-                <td data-label="">
+                <td data-label="" style="text-align:center;">
                   <span class="mi mi-Error detail ht" title="Detail"></span>
                   <span class="mi mi-Edit edit" title="Edit Data"></span>
-                  <span class="mi mi-Delete del" title="Hapus !"></span>
+                  <span class="mi mi-Delete del" title="Hapus !" @click="delData(index)"></span>
                 </td>
               </tr>
             </tbody>
@@ -45,36 +47,59 @@
           <a>Next</a>
         </div>
     </div>
-    <div class="shade" v-if="modalAddForm">
-      <div class="modal">
-        <div class="modal-content">
-          <div class="m-header">
-          Add Data Form
-        </div>
-        <div class="m-body">
-          <form>
-            <div class="form">
+    <div class="modal-mask" v-if="modalAddForm">
+      <div class="modal-wrapper">
+        <div class="modal-container">
+          <div class="modal-header">
+            Add Form Data
+            <span style="float: right; cursor: pointer" class="mi mi-Cancel" @click="modalAddForm=false"></span>
+          </div>
+          <div class="modal-body">
+            <form>
               <div class="form-row">
-                <div class="form-group col-lg-6">
-                  <label for="inputEmail4">Email</label>
-                  <input type="email" class="form-control input-grup" id="inputEmail4" placeholder="Email">
+                <div class="form-group col-md-6">
+                  <label for="inputEmail4">Kode Obat</label>
+                  <input type="email" class="form-control" placeholder="e.g XXXXX">
                 </div>
-                <div class="form-group col-lg-6">
-                  <label for="inputPassword4">Password</label>
-                  <input type="password" class="form-control input-grup" id="inputPassword4" placeholder="Password">
+                <div class="form-group col-md-6">
+                  <label for="inputPassword4">Nama Obat</label>
+                  <input type="password" class="form-control" placeholder="">
                 </div>
               </div>
               <div class="form-group">
-                <label for="inputPassword4">Password</label>
-                <input type="password" class="form-control input-grup" id="inputPassword4" placeholder="Password">
+                <label for="inputAddress">Address</label>
+                <input type="text" class="form-control"placeholder="1234 Main St">
               </div>
+              <div class="form-group">
+                <label for="inputAddress2">Address 2</label>
+                <input type="text" class="form-control" id="inputAddress2" placeholder="Apartment, studio, or floor">
+              </div>
+              <div class="form-row">
+                <div class="form-group col-md-6">
+                  <label for="inputCity">City</label>
+                  <input type="text" class="form-control" id="inputCity">
+                </div>
+                <div class="form-group col-md-4">
+                  <label for="inputState">State</label>
+                  <select id="inputState" class="form-control">
+                    <option selected>Choose...</option>
+                    <option>Laki-laki</option>
+                    <option>Wanita</option>
+                  </select>
+                </div>
+                <div class="form-group col-md-2">
+                  <label for="inputZip">Zip</label>
+                  <input type="text" class="form-control" id="inputZip">
+                </div>
+              </div>
+            </form>
+          </div>
+          <div class="modal-footer">
+            <div class="btn">
+              <button class="export" @click="modalAddForm=false">Batal</button>
+              <button class="add">Simpan</button>
             </div>
-          </form>
-        </div>
-        <div class="m-footer">
-          <button class="cancel" @click="modalAddForm=false">Batal</button>
-          <button class="save">Simpan</button>
-        </div>
+          </div>
         </div>
       </div>
     </div>
@@ -110,24 +135,14 @@ export default {
         drugname: "Anak Sumang",
         stock: 19,
         suplayer: "PT. Jaya Mandiri"},
-        { id: "MXGRP",
-        drugname: "Mixagrip",
-        stock: 19,
-        suplayer: "PT. Jaya Mandiri"},
-        { id: "MXGRP",
-        drugname: "Mixagrip",
-        stock: 19,
-        suplayer: "PT. Jaya Mandiri"},
-        { id: "MXGRP",
-        drugname: "Mixagrip",
-        stock: 19,
-        suplayer: "PT. Jaya Mandiri"},
-        { id: "MXGRP",
-        drugname: "Mixagrip",
-        stock: 19,
-        suplayer: "PT. Jaya Mandiri"},
+        
         ]
     }
+  },
+  methods:{
+    delData(index){
+            this.drugs.splice(index, 1)
+        },
   }
 }
 </script>
@@ -165,59 +180,98 @@ export default {
     }
   }
 //shade style
-.shade{
+.modal-mask {
   position: fixed;
+  z-index: 9998;
   top: 0;
-  bottom: 0;
   left: 0;
-  right: 0;
-  background-color: #0000001f;
-  z-index: 9;
-  .modal{
-    width: 500px;
-    background-color: white;
-    margin: 0 auto;
-    margin-top: 80px;
-    box-shadow: 0 0.3px 0.9px rgba(0, 0, 0, 0.18), 0 1.6px 3.6px rgba(0, 0, 0, 0.22);
-    .m-header{
-      padding: 14px;
+  width: 100%;
+  height: 100%;
+  background-color: rgba(0, 0, 0, 0.329);
+  display: table;
+  transition: opacity .3s ease;
+}
+.modal-wrapper {
+  display: table-cell;
+  vertical-align: middle;
+}
+.modal-container {
+  width: 500px;
+  margin: 0px auto;
+  background-color: #fff;
+  border-radius: 1px;
+  box-shadow: 0 0.3px 0.9px rgba(0, 0, 0, 0.18), 0 1.6px 3.6px rgba(0, 0, 0, 0.22);
+  transition: all .3s ease;
+  overflow: hidden;
+}
+.modal-header{
+  background-color: #0078D7;
+  padding: 16px;
+  color: white;
+  h3 {
+  margin-top: 0;
+  color: #42b983;
+  }
+}
+.modal-header,.modal-body,.modal-footer {
+  padding: 16px;  
+}
+.modal-footer{
+  text-align: right;
+  .btn{
+    button{
+      width: 90px;
+    }
+    .export{
+      border: none;
+      color: rgb(38, 39, 39);
+      background-color: rgba(158, 155, 155, 0.192);
+      padding: 8px 16px;
+      border-radius: 1px;
+      cursor: pointer;
+      margin: 0px 10px;
+    }
+    .export:hover{
+      background-color: rgba(85, 85, 85, 0.192);
+    }
+    .add{
+      border: none;
       background-color: #0078D7;
       color: white;
+      font-weight: 600;
+      padding: 8px 16px;
+      border-radius: 1px;
+      cursor: pointer;
     }
-    .m-body{
-      padding: 14px;
-    }
-    .m-footer{
-      padding: 20px 14px;
-      text-align: right;
-      button{
-        margin: 0px 4px;
-        padding: 6px 10px;
-        cursor: pointer;
-        border-radius: 2px;
-        font-weight: 300;
-        border: none;
-        width: 80px;
-      }
-      button:focus{
-        outline: none;
-      }
-      .cancel{
-        background-color: #f2f2f2;
-      }
-      .cancel:hover{
-        background-color: rgba(85, 85, 85, 0.192);
-      }
-      .save{
-        background-color: #0078D7;
-        color: white;
-        font-weight: 400;
-      }
-      .save:hover{
-        background-color: rgb(1, 101, 184);
-      }
+    .add:hover{
+      background-color: rgb(1, 101, 184);
     }
   }
+}
+.modal-default-button {
+  float: right;
+}
+/*
+ * The following styles are auto-applied to elements with
+ * transition="modal" when their visibility is toggled
+ * by Vue.js.
+ *
+ * You can easily play with the modal transition by editing
+ * these styles.
+ */
+
+.modal-enter {
+  opacity: 0;
+}
+
+.modal-leave-active {
+  opacity: 0;
+}
+
+.modal-enter .modal-container,
+.modal-leave-active .modal-container {
+  -webkit-transform: scale(1.1);
+  transform: scale(1.1);
 }
 // table Style
 table {
@@ -232,14 +286,13 @@ table {
   }
   th{
   padding: 12px 0px;
-  text-align: center;
   font-size: 14px;
   letter-spacing: .1em;
   text-transform: uppercase;
   }
   td {
   padding: .625em;
-  text-align: center;
+  
   font-size: 12px;
   span{
     background-color: rgb(218, 218, 218);
@@ -285,6 +338,11 @@ table {
     font-weight: bold;
     padding: 6px 8px;
   }
+}
+@media only screen and (max-width: 992px) {
+    .modal-container {
+      width: 98%;
+    }
 }
 @media screen and (max-width: 600px) {
   .shade{
