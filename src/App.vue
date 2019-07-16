@@ -71,6 +71,8 @@ $bg-color : #faf9f8;
 // style for input
 label{
   font-size: 12px;
+  font-weight: 450;
+  color: #4C4A48;
 }
 input, select{
   margin: 6px 0px;

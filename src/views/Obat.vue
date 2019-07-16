@@ -19,22 +19,24 @@
                 <td scope="col">KODE OBAT</td>
                 <td scope="col">NAMA OBAT</td>
                 <td scope="col" style="text-align:center;">STOCK</td>
+                <td scope="col">HARGA JUAL</td>
                 <td scope="col">SUPLAYER</td>
                 <td scope="col" style="text-align:center;">ACTION</td>
               </tr>
             </thead>
             <tbody>
-              <tr v-for="(drug, index) in drugs" :key="drugs.id">
+              <tr v-for="(drug, index) in sortedArray" :key="drugs.drugID">
                 <td><input type="checkbox"></td>
-                <td data-label="KODE OBAT">{{drug.id}}</td>
-                <td data-label="NAMA OBAT">{{drug.drugname}}</td>
+                <td data-label="KODE OBAT">{{drug.drugID}}</td>
+                <td data-label="NAMA OBAT">{{drug.drugName}}</td>
                 <td data-label="STOCK" style="text-align:center;">
                     {{drug.stock}}
                 </td>
+                <td>Rp. {{drug.sellingPrice}}</td>
                 <td data-label="SUPLAYER">{{drug.suplayer}}</td>
                 <td data-label="" style="text-align:center;">
                   <span class="mi mi-Error detail ht" title="Detail"></span>
-                  <span class="mi mi-Edit edit" title="Edit Data"></span>
+                  <span class="mi mi-Edit edit" title="Edit Data" @click="modalEditForm=true"></span>
                   <span class="mi mi-Delete del" title="Hapus !" @click="delData(index)"></span>
                 </td>
               </tr>
@@ -47,6 +49,7 @@
           <a>Next</a>
         </div>
     </div>
+    <!-- add form modal -->
     <div class="modal-mask" v-if="modalAddForm">
       <div class="modal-wrapper">
         <div class="modal-container">
@@ -56,48 +59,100 @@
           </div>
           <div class="modal-body">
             <form>
-              <div class="form-row">
-                <div class="form-group col-md-6">
-                  <label for="inputEmail4">Kode Obat</label>
-                  <input type="email" class="form-control" placeholder="e.g XXXXX">
-                </div>
-                <div class="form-group col-md-6">
-                  <label for="inputPassword4">Nama Obat</label>
-                  <input type="password" class="form-control" placeholder="">
-                </div>
+              <div class="form-group">
+                <label>Kode Obat</label>
+                <input type="text" class="form-control" placeholder="e.g xxxxx" maxlength="6" v-model="newDrug.drugID">
               </div>
               <div class="form-group">
-                <label for="inputAddress">Address</label>
-                <input type="text" class="form-control"placeholder="1234 Main St">
-              </div>
-              <div class="form-group">
-                <label for="inputAddress2">Address 2</label>
-                <input type="text" class="form-control" id="inputAddress2" placeholder="Apartment, studio, or floor">
+                <label>Nama</label>
+                <input type="text" class="form-control" placeholder="Nama obat" v-model="newDrug.drugName">
               </div>
               <div class="form-row">
                 <div class="form-group col-md-6">
-                  <label for="inputCity">City</label>
-                  <input type="text" class="form-control" id="inputCity">
+                  <label>Harga Beli</label>
+                  <input type="number" class="form-control" placeholder="Rp." v-model="newDrug.purchasePrice">
                 </div>
-                <div class="form-group col-md-4">
-                  <label for="inputState">State</label>
-                  <select id="inputState" class="form-control">
-                    <option selected>Choose...</option>
-                    <option>Laki-laki</option>
-                    <option>Wanita</option>
+                <div class="form-group col-md-6">
+                  <label>Harga Jual</label>
+                  <input type="number" class="form-control"placeholder="Rp." v-model="newDrug.sellingPrice">
+                </div>
+              </div>
+              <div class="form-group">
+                <label for="satuan">Suplayer</label>
+                <select id="suplayer" class="form-control" v-model="newDrug.suplayer">
+                  <option selected disabled>Pilih Suplayer</option>
+                  <option>PT. Konimex</option>
+                  <option>PT. Sehat Abadi</option>
+                </select>
+              </div>
+              <div class="form-group">
+                <label>Indikasi</label>
+                <input type="text" class="form-control" placeholder="Indikasi obat" v-model="newDrug.indication">
+              </div>
+              <div class="form-row">
+                <div class="form-group col-md-8">
+                  <label for="satuan">Satuan</label>
+                  <select id="suplayer" class="form-control" v-model="newDrug.unit">
+                    <option selected disabled>Pilih Satuan Obat</option>
+                    <option>Botol</option>
+                    <option>Tablet</option>
+                    <option>Sirup</option>
                   </select>
                 </div>
-                <div class="form-group col-md-2">
-                  <label for="inputZip">Zip</label>
-                  <input type="text" class="form-control" id="inputZip">
+                <div class="form-group col-md-4">
+                  <label>Stok</label>
+                  <input type="number" class="form-control" placeholder="Stock-Obat" v-model="newDrug.stock">
                 </div>
               </div>
             </form>
           </div>
           <div class="modal-footer">
             <div class="btn">
-              <button class="export" @click="modalAddForm=false">Batal</button>
-              <button class="add">Simpan</button>
+              <button class="export" @click="cancelAddDrug()">Batal</button>
+              <button class="add" @click="addDrug()">Simpan</button>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+    <!-- edit form modal -->
+    <div class="modal-mask" v-if="modalEditForm">
+      <div class="modal-wrapper">
+        <div class="modal-container">
+          <div class="modal-header">
+            Add Form Data
+            <span style="float: right; cursor: pointer" class="mi mi-Cancel" @click="modalEditForm=false"></span>
+          </div>
+          <div class="modal-body">
+            <form>
+              <div class="form-group">
+                <label>Kode Obat</label>
+                <input type="text" class="form-control" placeholder="e.g xxxxx" maxlength="6" v-model="newDrug.id">
+              </div>
+              <div class="form-group">
+                <label>Nama</label>
+                <input type="text" class="form-control" placeholder="Nama obat" v-model="newDrug.drugname">
+              </div>
+              <div class="form-row">
+                <div class="form-group col-md-8">
+                  <label for="suplayer">Suplayer</label>
+                  <select id="suplayer" class="form-control" v-model="newDrug.suplayer">
+                    <option selected disabled>Pilih Suplayer</option>
+                    <option>PT. Sehat Abadi</option>
+                    <option>PT. Makmur Sejahter</option>
+                  </select>
+                </div>
+                <div class="form-group col-md-4">
+                  <label for="stock">Stok</label>
+                  <input type="number" class="form-control" id="stock" placeholder="Stock-Obat" value="0" v-model="newDrug.stock">
+                </div>
+              </div>
+            </form>
+          </div>
+          <div class="modal-footer">
+            <div class="btn">
+              <button class="export" @click="cancelAddDrug()">Batal</button>
+              <button class="add" @click="addDrug()">Update</button>
             </div>
           </div>
         </div>
@@ -110,39 +165,76 @@ export default {
   data(){
     return{
       modalAddForm: false,
+      modalEditForm: false,
+      isAlert: false,
+      newDrug: { drugID: "",
+                  drugName: "",
+                  purchasePrice: "",
+                  sellingPrice: "",
+                  suplayer: "",
+                  indication: "",
+                  unit: "",
+                  stock: "",},
       drugs:[
-        { id: "BDRXN",
-          drugname: "Bodrexin",
-          stock: 143,
-          suplayer: "PT. Indomarco"},
-        { id: "PYR38",
-        drugname: "Puyer 38",
-        stock: 46,
-        suplayer: "PT. Indomarco"},
-        { id: "BLSMG",
-        drugname: "Balsem Geliga",
-        stock: 100,
-        suplayer: "PT. Jaya Mandiri"},
-        { id: "MXGRP",
-        drugname: "Mixagrip",
-        stock: 19,
-        suplayer: "PT. Jaya Mandiri"},
-        { id: "PLDMX",
-        drugname: "Poldanmix",
-        stock: 34,
-        suplayer: "PT. Jaya Mandiri"},
-        { id: "ANKSMG",
-        drugname: "Anak Sumang",
-        stock: 19,
-        suplayer: "PT. Jaya Mandiri"},
-        
+        { drugID: "BDRXIN",
+          drugName: "Bodrexin",
+          purchasePrice: 20000,
+          sellingPrice: 22000,
+          suplayer: "PT. Konimex",
+          indication: "Batuk dan pilek",
+          unit: "tablet",
+          stock: 143,},
+          { drugID: "ANTIMO",
+          drugName: "Antimo",
+          purchasePrice: 1800,
+          sellingPrice: 2000,
+          suplayer: "PT. Konimex",
+          indication: "Pusing",
+          unit: "tablet",
+          stock: 143,},
         ]
     }
   },
+  computed:{
+    sortedArray: function() {
+      function compare(a, b) {
+        if (a.drugname < b.drugname)
+          return -1;
+        if (a.drugname > b.drugname)
+          return 1;
+        return 0;
+      }
+      return this.drugs.sort(compare).reverse();
+    }
+  },
   methods:{
+    addDrug(){
+      this.drugs.push({
+          drugID: this.newDrug.drugID,
+          drugName: this.newDrug.drugName,
+          purchasePrice: parseInt(this.newDrug.purchasePrice),
+          sellingPrice: parseInt(this.newDrug.sellingPrice),
+          suplayer: this.newDrug.suplayer,
+          indication: this.newDrug.indication,
+          unit: this.newDrug.unit,
+          stock: parseInt(this.newDrug.stock), 
+      })
+      this.cancelAddDrug();
+    },
+    cancelAddDrug(){
+      this.newDrug.drugID = ""
+      this.newDrug.drugName = ""
+      this.newDrug.purchasePrice = ""
+      this.newDrug.sellingPrice = ""
+      this.newDrug.suplayer = ""
+      this.newDrug.indication = ""
+      this.newDrug.unit = ""
+      this.newDrug.stock = ""
+      this.modalAddForm=false;
+    },
     delData(index){
-            this.drugs.splice(index, 1)
-        },
+      this.drugs.splice(index, 1)
+    },
   }
 }
 </script>
@@ -151,6 +243,16 @@ export default {
 <style lang="scss" scoped>
   .info{
     float: left;
+  }
+  .alert{
+    color: #E74856;
+    padding: 0px 2px;
+    font-size: 10px;
+    font-style: normal;  
+  }
+  .alertInput{
+    border-color: #E74856;
+    background-color: rgba(231, 72, 85, 0.13);
   }
   .btn-group{
     float: right;
@@ -196,7 +298,7 @@ export default {
   vertical-align: middle;
 }
 .modal-container {
-  width: 500px;
+  width: 380px;
   margin: 0px auto;
   background-color: #fff;
   border-radius: 1px;
@@ -218,16 +320,17 @@ export default {
 }
 .modal-footer{
   text-align: right;
+  padding: 0px 16px 16px 16px;
   .btn{
     button{
-      width: 90px;
+      width: 80px;
+      border-radius: 1px;
+      padding: 6px 14px;
+      border: none;
     }
     .export{
-      border: none;
       color: rgb(38, 39, 39);
       background-color: rgba(158, 155, 155, 0.192);
-      padding: 8px 16px;
-      border-radius: 1px;
       cursor: pointer;
       margin: 0px 10px;
     }
@@ -235,12 +338,9 @@ export default {
       background-color: rgba(85, 85, 85, 0.192);
     }
     .add{
-      border: none;
       background-color: #0078D7;
       color: white;
       font-weight: 600;
-      padding: 8px 16px;
-      border-radius: 1px;
       cursor: pointer;
     }
     .add:hover{
