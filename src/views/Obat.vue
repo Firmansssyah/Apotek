@@ -5,7 +5,7 @@
         <div class="col-lg-10">
           <div class="info"><b>Total : </b> 165 obat</div>
           <div class="btn-group">
-            <button class="export"><i class="mi mi-Export"></i> Export Data</button>
+            <button class="export" @click="exportDrugsData()"><i class="mi mi-Export"></i> Export Data</button>
             <button class="add" @click="modalAddForm=true"><i class="mi mi-Add"></i> Add Data</button>
           </div>
         </div>
@@ -36,7 +36,7 @@
                 <td data-label="SUPLAYER">{{drug.suplayer}}</td>
                 <td data-label="" style="text-align:center;">
                   <span class="mi mi-Error detail ht" title="Detail"></span>
-                  <span class="mi mi-Edit edit" title="Edit Data" @click="modalEditForm=true"></span>
+                  <span class="mi mi-Edit edit" title="Edit Data" @click="editDrug(index)"></span>
                   <span class="mi mi-Delete del" title="Hapus !" @click="delData(index)"></span>
                 </td>
               </tr>
@@ -120,39 +120,62 @@
       <div class="modal-wrapper">
         <div class="modal-container">
           <div class="modal-header">
-            Add Form Data
+            Edit Form Data
             <span style="float: right; cursor: pointer" class="mi mi-Cancel" @click="modalEditForm=false"></span>
           </div>
           <div class="modal-body">
             <form>
               <div class="form-group">
                 <label>Kode Obat</label>
-                <input type="text" class="form-control" placeholder="e.g xxxxx" maxlength="6" v-model="newDrug.id">
+                <input type="text" class="form-control" placeholder="e.g xxxxx" maxlength="6" v-model="editDrugInput.drugID">
               </div>
               <div class="form-group">
                 <label>Nama</label>
-                <input type="text" class="form-control" placeholder="Nama obat" v-model="newDrug.drugname">
+                <input type="text" class="form-control" placeholder="Nama obat" v-model="editDrugInput.drugName">
+              </div>
+              <div class="form-row">
+                <div class="form-group col-md-6">
+                  <label>Harga Beli</label>
+                  <input type="number" class="form-control" placeholder="Rp." v-model="editDrugInput.purchasePrice">
+                </div>
+                <div class="form-group col-md-6">
+                  <label>Harga Jual</label>
+                  <input type="number" class="form-control"placeholder="Rp." v-model="editDrugInput.sellingPrice">
+                </div>
+              </div>
+              <div class="form-group">
+                <label for="suplayer">Suplayer</label>
+                <select id="suplayer" class="form-control" v-model="editDrugInput.suplayer">
+                  <option selected disabled>Pilih Suplayer</option>
+                  <option>PT. Konimex</option>
+                  <option>PT. Sehat Abadi</option>
+                </select>
+              </div>
+              <div class="form-group">
+                <label>Indikasi</label>
+                <input type="text" class="form-control" placeholder="Indikasi obat" v-model="editDrugInput.indication">
               </div>
               <div class="form-row">
                 <div class="form-group col-md-8">
-                  <label for="suplayer">Suplayer</label>
-                  <select id="suplayer" class="form-control" v-model="newDrug.suplayer">
-                    <option selected disabled>Pilih Suplayer</option>
-                    <option>PT. Sehat Abadi</option>
-                    <option>PT. Makmur Sejahter</option>
+                  <label for="satuan">Satuan</label>
+                  <select id="satuan" class="form-control" v-model="editDrugInput.unit">
+                    <option selected disabled>Pilih Satuan Obat</option>
+                    <option>Botol</option>
+                    <option>Tablet</option>
+                    <option>Sirup</option>
                   </select>
                 </div>
                 <div class="form-group col-md-4">
-                  <label for="stock">Stok</label>
-                  <input type="number" class="form-control" id="stock" placeholder="Stock-Obat" value="0" v-model="newDrug.stock">
+                  <label>Stok</label>
+                  <input type="number" class="form-control" placeholder="Stock-Obat" v-model="editDrugInput.stock">
                 </div>
               </div>
             </form>
           </div>
           <div class="modal-footer">
             <div class="btn">
-              <button class="export" @click="cancelAddDrug()">Batal</button>
-              <button class="add" @click="addDrug()">Update</button>
+              <button class="export" @click="cancelEditDrug()">Batal</button>
+              <button class="add" @click="updateDrug()">Update</button>
             </div>
           </div>
         </div>
@@ -161,13 +184,22 @@
   </div>
 </template>
 <script>
+import jsPDF from 'jspdf';
 export default {
   data(){
     return{
       modalAddForm: false,
       modalEditForm: false,
       isAlert: false,
-      newDrug: { drugID: "",
+      editDrugInput: {  drugID: "",
+                  drugName: "",
+                  purchasePrice: "",
+                  sellingPrice: "",
+                  suplayer: "",
+                  indication: "",
+                  unit: "",
+                  stock: "",},
+      newDrug: {  drugID: "",
                   drugName: "",
                   purchasePrice: "",
                   sellingPrice: "",
@@ -182,7 +214,7 @@ export default {
           sellingPrice: 22000,
           suplayer: "PT. Konimex",
           indication: "Batuk dan pilek",
-          unit: "tablet",
+          unit: "Tablet",
           stock: 143,},
           { drugID: "ANTIMO",
           drugName: "Antimo",
@@ -190,7 +222,7 @@ export default {
           sellingPrice: 2000,
           suplayer: "PT. Konimex",
           indication: "Pusing",
-          unit: "tablet",
+          unit: "Tablet",
           stock: 143,},
         ]
     }
@@ -208,17 +240,23 @@ export default {
     }
   },
   methods:{
+    exportDrugsData(){
+      let pdfName = 'Data Obat'; 
+      var doc = new jsPDF();
+      doc.text("asd", 10, 10);
+      doc.save(pdfName + '.pdf');
+    },
     addDrug(){
       this.drugs.push({
-          drugID: this.newDrug.drugID,
-          drugName: this.newDrug.drugName,
-          purchasePrice: parseInt(this.newDrug.purchasePrice),
-          sellingPrice: parseInt(this.newDrug.sellingPrice),
-          suplayer: this.newDrug.suplayer,
-          indication: this.newDrug.indication,
-          unit: this.newDrug.unit,
-          stock: parseInt(this.newDrug.stock), 
-      })
+        drugID        : this.newDrug.drugID,
+        drugName      : this.newDrug.drugName,
+        purchasePrice : this.newDrug.purchasePrice,
+        sellingPrice  : this.newDrug.sellingPrice,
+        suplayer      : this.newDrug.suplayer,
+        indication    : this.newDrug.indication,
+        unit          : this.newDrug.unit,
+        stock         : this.newDrug.stock
+      });
       this.cancelAddDrug();
     },
     cancelAddDrug(){
@@ -231,6 +269,16 @@ export default {
       this.newDrug.unit = ""
       this.newDrug.stock = ""
       this.modalAddForm=false;
+    },
+    editDrug(index){
+      this.editDrugInput = this.drugs[index];
+      this.modalEditForm = true;
+    },
+    updateDrug(){ 
+      this.modalEditForm = false;
+    },
+    cancelEditDrug(){
+      this.modalEditForm=false;
     },
     delData(index){
       this.drugs.splice(index, 1)
@@ -266,7 +314,10 @@ export default {
       margin: 0px 10px;
     }
     .export:hover{
-      background-color: rgba(85, 85, 85, 0.192);
+      background-color: rgba(59, 59, 59, 0.192);
+    }
+    .export:focus{
+      outline: none;
     }
     .add{
       border: none;

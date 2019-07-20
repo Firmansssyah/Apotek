@@ -40,7 +40,7 @@
                 <div style="padding-bottom: 8px;"><b class="medium-txt">Obat</b></div>
                 <p class="small-txt">Data-data pasien, transaksi dll...</p>
                 <div class="link">
-                  <router-link class="small-txt" to="/about">Kelola Data</router-link>
+                  <router-link class="small-txt" to="/obat">Kelola Data</router-link>
                 </div>
             </div>
           </div>

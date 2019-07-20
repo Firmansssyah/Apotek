@@ -5,8 +5,10 @@
                 <ul>
                     <li>
                         <router-link class="link" to="/"><i class="mi mi-Home"></i> Beranda</router-link>
+                        <router-link class="link" to="/kasir"><i class="mi mi-Family"></i> Kasir</router-link>
                         <router-link class="link" to="/pasien"><i class="mi mi-Family"></i> Data Pasien</router-link>
                         <router-link class="link" to="/dokter"><i class="mi mi-PartyLeader"></i> Data Dokter</router-link>
+                        <router-link class="link" to="/suplayer"><i class="mi mi-ContactPresence"></i> Suplayer</router-link>
                         <router-link class="link" to="/obat"><i class="mi mi-Link"></i> Data Obat</router-link>
                         <router-link class="link" to="/laporan"><i class="mi mi-Trackers"></i> Laporan</router-link>
                         <router-link class="link" to="/about"><i class="mi mi-Error"></i> About</router-link>
